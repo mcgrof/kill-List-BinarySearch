@@ -12,9 +12,9 @@ require Exporter;
 use vars qw (@ISA @EXPORT);
 
 @ISA    = qw(Exporter);
-@EXPORT = qw(&binsearch &binsearch_pos &binsearch_range);
+@EXPORT = qw(&binsearch_num &binsearch_pos_num &binsearch_range_num);
 
-sub binsearch($target, $aref) {
+sub binsearch_num($target, $aref) {
     die "Only numbers allowed" unless looks_like_number($target);
     die "Expected an array reference!" unless ref $aref eq 'ARRAY';
 
@@ -40,7 +40,7 @@ sub binsearch($target, $aref) {
 # position for $target.
 
 
-sub binsearch_pos($target, $aref) {
+sub binsearch_pos_num($target, $aref) {
     die "Only numbers allowed" unless looks_like_number($target);
     die "Expected an array reference!" unless ref $aref eq 'ARRAY';
 
@@ -58,7 +58,7 @@ sub binsearch_pos($target, $aref) {
     return $low;
 }
 
-sub binsearch_range($low_target, $high_target, $aref) {
+sub binsearch_range_num($low_target, $high_target, $aref) {
   die "Only numbers allowed" unless looks_like_number($low_target);
   die "Only numbers allowed" unless looks_like_number($high_target);
   die "Expected an array reference!" unless ref $aref eq 'ARRAY';
@@ -66,8 +66,8 @@ sub binsearch_range($low_target, $high_target, $aref) {
   my( $index_low, $index_high );
 
   # Forward along the caller's $a and $b.
-  $index_low  = binsearch_pos( $low_target,  $aref );
-  $index_high = binsearch_pos( $high_target, $aref );
+  $index_low  = binsearch_pos_num( $low_target,  $aref );
+  $index_high = binsearch_pos_num( $high_target, $aref );
   if(  $index_high == scalar @$aref    or  $aref->[$index_high] > $high_target )
   {
     $index_high--;
