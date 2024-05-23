@@ -1,0 +1,17 @@
+List-BinarySearch
+
+Taken from: https://github.com/daoswald/List-BinarySearch
+
+We are only intersted in a few routines since the library is using an old GPLv1
+license and that's not compatible with GPLv2. Below is the license of the
+original code taken from the README.
+
+LICENSE AND COPYRIGHT
+
+Copyright (C) 2012 David Oswald
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.

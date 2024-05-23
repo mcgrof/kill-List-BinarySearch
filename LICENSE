@@ -1,0 +1,12 @@
+Copyright (c) 20024 Luis Chamberlain <mcgrof@kernel.org>
+
+The replacement for List-BinarySearch under new/ directory is licensed
+under copyleft-next-0.3.1
+
+Refer to LICENSES/preferred/copyleft-next-0.3.1 for license details.
+
+The old for List-BinarySearch under old/ directory is licensed
+under some initial version of the GPL but that does not seem to be
+compatible with GPLv2, so we are only keep this repository to help
+folks looking for replacement with a clear license. Refer to the old
+directory for license of the old List-BinarySearch.
