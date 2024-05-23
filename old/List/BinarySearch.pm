@@ -2,72 +2,61 @@
 
 package List::BinarySearch;
 
-use 5.008000;
 use strict;
 use warnings;
 use Carp;
 
 use Scalar::Util qw( looks_like_number );
 
-
-BEGIN {
-
-  my @imports = qw( binsearch binsearch_pos );
-
-  # Import XS by default, pure-Perl if XS is unavailable, or if
-  # $ENV{List_BinarySearch_PP} is set.
-
-  # This conditional has been tested manually.  Can't be automatically tested.
-  # uncoverable condition right false
-  if (
-       $ENV{List_BinarySearch_PP}
-    || ! eval 'use List::BinarySearch::XS @imports; 1;'  ## no critic (eval)
-  ) {
-    eval 'use List::BinarySearch::PP  @imports;';        ## no critic (eval)
-  }
-
-}
-
 require Exporter;
+use vars qw (@ISA @EXPORT);
 
-our @ISA       = qw(Exporter);    ## no critic (ISA)
+@ISA    = qw(Exporter);
+@EXPORT = qw(&binsearch &binsearch_pos &binsearch_range);
 
-# Note: binsearch and binsearch_pos come from List::BinarySearch::PP
-our @EXPORT_OK = qw(  binsearch         binsearch_pos       binsearch_range  );
-
-our %EXPORT_TAGS = ( all => \@EXPORT_OK );
-
-# The prototyping gives List::BinarySearch a similar feel to List::Util,
-# and List::MoreUtils.
-
-our $VERSION = '0.25';
-
-# Needed for developer's releases: See perlmodstyle.
-# $VERSION = eval $VERSION;    ## no critic (eval,version)
-
-
-# Custom import() to touch $a and $b in Perl version < 5.20, to eliminate
-# "used only once" warnings.
-{
-  if( $] < 5.020 ) {
-    *import = sub {
-      my $pkg = caller;
-      no strict 'refs'; ## no critic(strict)
-      ${"${pkg}::a"} = ${"${pkg}::a"};
-      ${"${pkg}::b"} = ${"${pkg}::b"};
-      # It would feel nicer to call shift->SUPER::import(@_), but 
-      # Exporter::import appears to be too fragile for this type of wrapper.
-      goto &Exporter::import;
-    };
-  }
+sub binsearch ($\@) {
+    my ( $target, $aref ) = @_;
+    my $min = 0;
+    my $max = $#{$aref};
+    while ( $max > $min ) {
+        my $mid = int( ( $max - $min ) / 2 + $min );
+	if ($aref->[$mid] < $target) {
+            $min = $mid + 1;
+        }
+        else {
+            $max = $mid;
+        }
+    }
+    {
+      return $min if $target == $aref->[$min];
+    }
+    return;    # Undef in scalar context, empty list in list context.
 }
 
+#------------------------------------------------------
+# Identical to binsearch, but upon match-failure returns best insert
+# position for $target.
 
 
-# binsearch and binsearch_pos will be loaded from List::BinarySearch::PP or
-# List::BinarySearch::XS.
+sub binsearch_pos ($\@) {
+    my ( $target, $aref ) = @_;
+    my ( $low, $high ) = ( 0, scalar @{$aref} );
+    my $caller = caller();
 
+    die "Only numbers allowed" unless looks_like_number($target);
+    die "Expected an array reference!" unless ref $aref eq 'ARRAY';
 
+    while ( $low < $high ) {
+        my $cur = int( ( $high - $low ) / 2 + $low );
+	if ($aref->[$cur] < $target) {
+            $low = $cur + 1;
+        }
+        else {
+            $high = $cur;
+        }
+    }
+    return $low;
+}
 
 sub binsearch_range ($$\@) {
   my( $low_target, $high_target, $aref ) = @_;
@@ -86,8 +75,6 @@ sub binsearch_range ($$\@) {
   }
   return ( $index_low, $index_high );
 }
-
-
 
 1;    # End of List::BinarySearch
 
