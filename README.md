@@ -34,6 +34,14 @@ This tests both the old and then the new library. You can therefore focus on
 correctness by just expanding the test unit once, and if both work then we have
 parity.
 
+Testing using the old library
+=============================
+
+The same set of tests are also available in a modified List-BinarySearch
+repository without any modifications at all to the code, refer to:
+
+https://github.com/mcgrof/List-BinarySearch
+
 Replacing the code
 ==================
 
