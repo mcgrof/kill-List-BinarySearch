@@ -69,20 +69,18 @@ our $VERSION = '0.25';
 
 
 
-sub binsearch_range (&$$\@) {
-  my( $code, $low_target, $high_target, $aref ) = @_;
+sub binsearch_range ($$\@) {
+  my( $low_target, $high_target, $aref ) = @_;
   my( $index_low, $index_high );
 
+  die "Only numbers allowed" unless looks_like_number($low_target);
+  die "Only numbers allowed" unless looks_like_number($high_target);
+  die "Expected an array reference!" unless ref $aref eq 'ARRAY';
+
   # Forward along the caller's $a and $b.
-  local( *a, *b ) = do{
-    no strict 'refs';  ## no critic (strict)
-    my $pkg = caller();
-    ( *{$pkg.'::a'}, *{$pkg.'::b'} );
-  };
-  $index_low  = binsearch_pos( \&$code, $low_target,  @$aref );
-  $index_high = binsearch_pos( \&$code, $high_target, @$aref );
-  local( $a, $b ) = ( $aref->[$index_high], $high_target ); # Use our own.
-  if(  $index_high == scalar @$aref    or    $code->( $a, $b ) > 0  )
+  $index_low  = binsearch_pos( $low_target,  @$aref );
+  $index_high = binsearch_pos( $high_target, @$aref );
+  if(  $index_high == scalar @$aref    or  $aref->[$index_high] > $high_target )
   {
     $index_high--;
   }

@@ -17,22 +17,16 @@ our @EXPORT = qw( binsearch binsearch_pos ); ## no critic (export)
 our $VERSION = '0.25';
 # $VERSION = eval $VERSION;  ## no critic (eval)
 
-
-
 #---------------------------------------------
 # Use a callback for comparisons.
 
-sub binsearch (&$\@) {
-    my ( $code, $target, $aref ) = @_;
+sub binsearch ($\@) {
+    my ( $target, $aref ) = @_;
     my $min = 0;
     my $max = $#{$aref};
-    my $caller = caller();
     while ( $max > $min ) {
         my $mid = int( ( $max - $min ) / 2 + $min );
-        no strict 'refs'; ## no critic(strict)
-        local ( ${"${caller}::a"}, ${"${caller}::b"} )
-          = ( $target, $aref->[$mid] );
-        if ( $code->( $target, $aref->[$mid] ) > 0 ) {
+	if ($aref->[$cur] < $target) {
             $min = $mid + 1;
         }
         else {
@@ -40,10 +34,7 @@ sub binsearch (&$\@) {
         }
     }
     {
-      no strict 'refs'; ## no critic(strict)
-      local ( ${"${caller}::a"}, ${"${caller}::b"} )
-        = ( $target, $aref->[$min] );
-      return $min if $code->( $target, $aref->[$min] ) == 0;
+      return $min if $target == $aref->[$min];
     }
     return;    # Undef in scalar context, empty list in list context.
 }
@@ -54,16 +45,17 @@ sub binsearch (&$\@) {
 # position for $target.
 
 
-sub binsearch_pos (&$\@) {
-    my ( $comp, $target, $aref ) = @_;
+sub binsearch_pos ($\@) {
+    my ( $target, $aref ) = @_;
     my ( $low, $high ) = ( 0, scalar @{$aref} );
     my $caller = caller();
+
+    die "Only numbers allowed" unless looks_like_number($target);
+    die "Expected an array reference!" unless ref $aref eq 'ARRAY';
+
     while ( $low < $high ) {
         my $cur = int( ( $high - $low ) / 2 + $low );
-        no strict 'refs';  ## no critic(strict)
-        local ( ${"${caller}::a"}, ${"${caller}::b"} )
-          = ( $target, $aref->[$cur] );                            # Future use.
-        if ( $comp->( $target, $aref->[$cur] ) > 0 ) {
+	if ($aref->[$cur] < $target) {
             $low = $cur + 1;
         }
         else {
