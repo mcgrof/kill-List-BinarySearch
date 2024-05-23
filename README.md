@@ -33,3 +33,16 @@ make test
 This tests both the old and then the new library. You can therefore focus on
 correctness by just expanding the test unit once, and if both work then we have
 parity.
+
+Replacing the code
+==================
+
+The new library is simple and self contained to only allow digit arrays.
+The way to replace it may look like this in your patch:
+
+{{{
+-       my ($lowidx, $highidx) = binsearch_range { $a <=> $b }  $low, $high, @{$dataref};
++       my ($lowidx, $highidx) = binsearch_range_num($low, $high, $dataref);
+}}}
+
+Where $dataref is an array of digits.
