@@ -4,9 +4,9 @@ package List::BinarySearch;
 
 use strict;
 use warnings;
-use Carp;
-
-use Scalar::Util qw( looks_like_number );
+use feature 'signatures';
+no warnings 'experimental::signatures';
+use Scalar::Util qw(looks_like_number);
 
 require Exporter;
 use vars qw (@ISA @EXPORT);
@@ -14,8 +14,10 @@ use vars qw (@ISA @EXPORT);
 @ISA    = qw(Exporter);
 @EXPORT = qw(&binsearch &binsearch_pos &binsearch_range);
 
-sub binsearch ($\@) {
-    my ( $target, $aref ) = @_;
+sub binsearch($target, $aref) {
+    die "Only numbers allowed" unless looks_like_number($target);
+    die "Expected an array reference!" unless ref $aref eq 'ARRAY';
+
     my $min = 0;
     my $max = $#{$aref};
     while ( $max > $min ) {
@@ -38,13 +40,11 @@ sub binsearch ($\@) {
 # position for $target.
 
 
-sub binsearch_pos ($\@) {
-    my ( $target, $aref ) = @_;
-    my ( $low, $high ) = ( 0, scalar @{$aref} );
-    my $caller = caller();
-
+sub binsearch_pos($target, $aref) {
     die "Only numbers allowed" unless looks_like_number($target);
     die "Expected an array reference!" unless ref $aref eq 'ARRAY';
+
+    my ( $low, $high ) = ( 0, scalar @{$aref} );
 
     while ( $low < $high ) {
         my $cur = int( ( $high - $low ) / 2 + $low );
@@ -58,17 +58,16 @@ sub binsearch_pos ($\@) {
     return $low;
 }
 
-sub binsearch_range ($$\@) {
-  my( $low_target, $high_target, $aref ) = @_;
-  my( $index_low, $index_high );
-
+sub binsearch_range($low_target, $high_target, $aref) {
   die "Only numbers allowed" unless looks_like_number($low_target);
   die "Only numbers allowed" unless looks_like_number($high_target);
   die "Expected an array reference!" unless ref $aref eq 'ARRAY';
 
+  my( $index_low, $index_high );
+
   # Forward along the caller's $a and $b.
-  $index_low  = binsearch_pos( $low_target,  @$aref );
-  $index_high = binsearch_pos( $high_target, @$aref );
+  $index_low  = binsearch_pos( $low_target,  $aref );
+  $index_high = binsearch_pos( $high_target, $aref );
   if(  $index_high == scalar @$aref    or  $aref->[$index_high] > $high_target )
   {
     $index_high--;
